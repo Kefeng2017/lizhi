@@ -21,12 +21,29 @@ app.use(koaBody({
 
 // 路由
 // 获取所有video
-router.get('/', async ctx => {
+router.get('/all', async ctx => {
     const list = await ctx.db.query('select * from videos')
     if (list.length) {
         ctx.body = { code: 0, videos: list }
     } else {
         ctx.body = { code: -1, msg: 'something you looking for is not exist' }
+    }
+})
+
+// 获取视频信息
+router.get('/video', async ctx => {
+    const id = parseInt(ctx.request.query.id)
+    if (id) {
+        try {
+            const video = await ctx.db.query('select * from viodes where id=?', id)
+            if (video.length) {
+                ctx.body = { code: 0, video: video }
+            } else {
+                ctx.body = { code: -1, msg: 'the video you looking for is not exist' }
+            }
+        } catch (e) {
+            ctx.body = { code: -1, msg: 'get video info failed' }
+        }
     }
 })
 
@@ -49,7 +66,7 @@ router.post('/add', async ctx => {
         const tempList = cover.name.split('.')
         const randomName = uuidv1() + '.' + tempList[tempList.length - 1]
 
-        const ws = fs.createWriteStream(path.resolve(__dirname, '../cover/' + randomName))
+        const ws = fs.createWriteStream(path.resolve(__dirname, './cover/' + randomName))
         const saveCover = await rs.pipe(ws)
         const cover_url = 'http://' + ctx.host + saveCover.path
         const saveList = [
@@ -85,7 +102,7 @@ router.post('/uploadcover', async ctx => {
         const tempList = cover.name.split('.')
         const randomName = uuidv1() + '.' + tempList[tempList.length - 1]
 
-        const ws = fs.createWriteStream(path.resolve(__dirname, '../cover/' + randomName))
+        const ws = fs.createWriteStream(path.resolve(__dirname, './cover/' + randomName))
         const saveCover = await rs.pipe(ws)
         const cover_url = 'http://' + ctx.host + saveCover.path
 
