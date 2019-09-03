@@ -4,6 +4,16 @@
   </div>
 </template>
 
+<script>
+export default {
+    watch: {
+        $route() {
+            document.documentElement.scrollTop = 0
+        }
+    }
+}
+</script>
+
 <style lang="scss">
 @import '//at.alicdn.com/t/font_1345347_qudi28g6mhs.css';
 

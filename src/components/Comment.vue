@@ -13,35 +13,6 @@
           <span class="vote">牛逼&nbsp;(587)</span>
         </li>
         <hr class="line" />
-
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
-        <li class="list-item">
-          <img alt class="avatar" src="../assets/img/avatar.jpg" />
-          <p class="text">你好，会的。</p>
-        </li>
       </ul>
     </div>
   </div>
