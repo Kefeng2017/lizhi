@@ -1,78 +1,84 @@
 <template>
   <div class="detail">
     <!-- 标题 -->
-    <h1 class="title-wrap">
+    <h3 class="title-wrap">
       <img
         :class="{'rotate-pause':!isPlaying}"
         class="disc"
         ref="disc"
         src="../assets/img/lizhi.png"
       />
-      <span class="title">This is an detail page</span>
+      <span class="title">{{video.title}}</span>
 
       <p class="options">
-        <i class="icon-xihuandianjihou iconfont" style="font-size:22px;"></i> 喜欢
-        <i class="icon-fire iconfont" style="font-size:18px;"></i> 热度
-        <i class="icon-share iconfont" style="font-size:18px;"></i>
-        分享
+        <i class="icon-fire-fill iconfont" ></i>{{video.vote}}
+        <i class="icon-share iconfont" ></i>分享
+        <i class="icon-Dollar iconfont"></i>赏口饭
       </p>
-    </h1>
+    </h3>
 
-    <div class="video-wrap">
-      <hls-video :source="source" @control="controlEvent" ref="video"></hls-video>
+    <div v-if="video" class="video-wrap">
+      <player @control="controlEvent" :videoInfo=video />
     </div>
-
     <!-- 作品描述 -->
     <div class="desc-wrap">
-      <p class="desc">
-        李志，中国大陆男歌手，太合音乐集团旗下的麦田音乐厂牌音乐人，现居江苏省南京市。现由于不明原因自2019年4月起被中国大陆封禁。 维基百科
-        生于： 1978 年 11 月 13 日（40 岁)，中华人民共和国常州市金坛区
-        出道作品： 《被禁忌的游戏》
-        音乐类型： 民谣（早期）、流行（部分）、摇滚、迷幻摇滚
-        代表作品： 《天空之城》《关于郑州的记忆》《这个世界会好吗》
-      </p>
+      <p class="desc">{{video.description}}</p>
     </div>
-
-    <hr class="line" />
 
     <!-- 评论区 -->
     <div class="comment-wrap" ref="comment">
-      <comment></comment>
+      <comment ref="comment" :comments=commentList></comment>
     </div>
 
     <!-- 发言 -->
     <div :class="{'show-up':msgTop<clientHeight}" class="say">
       <div class="msg-wrap">
-        <input class="msg-input" placeholder="说点什么..." type="text" />
-        <button class="send-btn">发送</button>
+        <input v-model="comment" class="msg-input" placeholder="说点什么..." type="text" />
+        <button @click="sentComment" class="send-btn">发送</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import hlsVideo from '@/components/hlsVideo'
+import Player from '@/components/player'
 import Comment from '@/components/Comment'
 
 export default {
   components: {
-    hlsVideo,
+    Player,
     Comment
   },
   data () {
     return {
-      source: '',
       isPlaying: false,
       msgTop: 0,
-      clientHeight: document.documentElement.clientHeight
+      clientHeight: document.documentElement.clientHeight,
+      video: '',
+      comment:'',
+      video_id:this.$route.params.id,
+      commentList:[]
     }
   },
   created () {
     let id = this.$route.params.id
-    this.source = '/kiwi/videos/' + id
+    this.axios.get('/api/video?id=' + id).then(res => {
+      if (res.data.code === 0) {
+        this.video = res.data.video[0]
+        this.video.source = '/kiwi/videos/' + this.video.en_name
+      }
+    })
+
+    this.axios.get('/api/comments?id='+this.video_id).then(res=>{
+      let data = res.data
+      if(data.code === 0){
+        this.commentList = data.comments
+      }
+    }).catch(e=>{
+      console.log(e);
+    })
   },
   mounted () {
-    // let video = this.$refs['video']
     let msg = this.$refs.comment
     let that = this
     window.addEventListener(
@@ -93,6 +99,21 @@ export default {
           this.isPlaying = true
           break
       }
+    },
+    sentComment(){
+      let comment = this.comment.trim()
+      if(comment){
+        this.axios.post('/api/addComment',{
+          comment,
+          video_id:this.video_id
+        }).then(res=>{
+          if(res.data.code === 0){
+            this.commentList.unshift(res.data.comment)
+            this.$refs.comment.comments = this.commentList
+            this.comment = ''
+          }
+        })
+      }
     }
   }
 }
@@ -101,11 +122,14 @@ export default {
 <style lang="scss" scoped>
 .detail {
   padding: 0 1em;
+
   .title-wrap {
+    position: relative;
     text-align: left;
     max-width: 1080px;
     margin: 0 auto;
-    padding: 2em 0;
+    padding: 1em 0;
+    position: relative;
     .disc {
       vertical-align: middle;
       width: 100px;
@@ -133,16 +157,32 @@ export default {
       padding-left: 1em;
       vertical-align: middle;
     }
-
-    .options {
-      line-height: 110px;
+    .options{
       vertical-align: middle;
-      float: right;
-      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      right: 0;
+      bottom: 0;
+      position: absolute;
       i {
-        margin-left: 1em;
+          vertical-align: middle;
+          margin-left: 1em;
+        }
+    }
+    @media (min-width: 540px) {
+      .options {
+        margin: 0;
+        top: 0;
       }
     }
+    @media (max-width: 540px) {
+    .options{
+      position: absolute;
+      bottom: 0;
+    }
+  }
   }
   .video-wrap {
     max-width: 1080px;
@@ -154,7 +194,7 @@ export default {
     margin: 0 auto;
     padding: 2em 0;
     .desc {
-      text-align: left;
+      text-align: justify;
       color: #cecbcb;
     }
   }
@@ -181,6 +221,7 @@ export default {
       justify-content: space-between;
 
       .msg-input {
+        border-radius: 0;
         background-color: #cecbcb;
         border: none;
         padding-left: 1em;
@@ -188,6 +229,7 @@ export default {
         flex-grow: 1;
       }
       .send-btn {
+        outline: none;
         color: #ddd;
         border: none;
         font-size: 16px;

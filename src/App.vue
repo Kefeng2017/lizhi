@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view />
+      <keep-alive include="home">
+          <router-view />
+      </keep-alive>
   </div>
 </template>
 
@@ -15,7 +17,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '//at.alicdn.com/t/font_1345347_qudi28g6mhs.css';
+@import '//at.alicdn.com/t/font_1345347_qsjauctm3a.css';
 
 * {
     padding: 0;
@@ -23,6 +25,11 @@ export default {
     list-style: none;
     outline: none;
     text-decoration: none;
+}
+@media (max-width: 540px) {
+    h3{
+        font-size: 1.4em !important;
+    }
 }
 #app {
     padding-bottom: 120px;

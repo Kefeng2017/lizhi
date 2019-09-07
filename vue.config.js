@@ -7,6 +7,14 @@ module.exports = {
     open: true, //配置自动启动浏览器  http://172.16.1.12:7071/rest/mcdPhoneBar/
     hotOnly: true, // 热更新
     proxy: {
+      "/api": {
+        // target: "http://localhost:9080",
+        target: "http://118.25.210.208:9080",
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": ""
+        }
+      },
       "/tx": {
         target: "http://video.kkboom.cn",
         changeOrigin: true,
@@ -19,13 +27,6 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           "^/kiwi": ""
-        }
-      },
-      "/api": {
-        target: "http://localhost:9080/",
-        changeOrigin: true,
-        pathRewrite: {
-          "^/api": ""
         }
       }
     }

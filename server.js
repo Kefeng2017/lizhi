@@ -6,6 +6,7 @@ const config = require('./server/config')
 const fs = require('fs')
 const path = require('path')
 const uuidv1 = require('uuid/v1')
+const gravatar = require('gravatar')
 
 const router = new Router()
 const app = new Koa()
@@ -35,13 +36,14 @@ router.get('/video', async ctx => {
     const id = parseInt(ctx.request.query.id)
     if (id) {
         try {
-            const video = await ctx.db.query('select * from viodes where id=?', id)
+            const video = await ctx.db.query('select * from videos where id=?', id)
             if (video.length) {
                 ctx.body = { code: 0, video: video }
             } else {
                 ctx.body = { code: -1, msg: 'the video you looking for is not exist' }
             }
         } catch (e) {
+            console.log(e)
             ctx.body = { code: -1, msg: 'get video info failed' }
         }
     }
@@ -156,6 +158,51 @@ router.get('/delete', async ctx => {
     }
 })
 
+
+// 发表评论
+// 添加
+router.post('/addComment', async ctx => {
+    try {
+
+        // 接受数据
+        const data = ctx.request.body
+        const email = data.email || uuidv1()+'@qq.com'
+        const avatar = gravatar.url(email, { s: '100', r: 'x', d: 'retro' }, true)
+        const saveList = [
+            data.comment,
+            data.video_id,
+            avatar,
+            data.name || '一位不愿透露姓名的少侠'
+        ]
+        const comment = {
+            avatar,
+            text:data.comment,
+            vote:0,
+            username: data.name || '一位不愿透露姓名的少侠'
+        }
+        const saveComment = await ctx.db.query('insert into comment(text,videoid,avatar,username) values (?,?,?,?)', saveList)
+        if (saveComment.affectedRows > 0) {
+            ctx.body = {code: 0, msg: '发表评论成功',comment}
+        } else {
+            ctx.body = { code: -1, msg: '发表评论失败' }
+        }
+    } catch (e) {
+        console.log(e)
+        ctx.body = { code: -1, msg: '服务器出错，请稍后再试' }
+    }
+})
+
+
+router.get('/comments', async ctx => {
+    try {
+        let id = parseInt(ctx.request.query.id)
+        let findResult = await ctx.db.query('select username,avatar,text,vote from comment where videoid=?', id)
+        ctx.body = { code: 0, comments: findResult }
+    } catch (e) {
+        console.log(e)
+        ctx.body = { code: -1, msg: 'get comments failed' }
+    }
+})
 
 
 app.use(router.routes()).use(router.allowedMethods())

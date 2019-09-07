@@ -66,7 +66,7 @@ export default {
     }
   },
   created () {
-    this.axios.get('/api').then(res => {
+    this.axios.get('/api/all').then(res => {
       const data = res.data
       if (data.code === 0) {
         this.videos = data.videos
