@@ -5,7 +5,7 @@
         <i class="iconfont icon-menu menu"></i>
         <p class="about">
           <a href="/about">关于本站</a>
-          <a href="/git">git仓库</a>
+          <a href="https://github.com/Kefeng2017/lizhi">git仓库</a>
           <a href="/award">赏杯奶茶</a>
         </p>
         <i @click="copyLink" class="iconfont icon-share share"></i>
@@ -13,7 +13,7 @@
 
       <div class="avatar">
         <img alt="南京市民李志" src="../assets/img/lizhi.png" />
-        <p>
+        <p class="name">
           南京市民李志
           <span></span>
         </p>
@@ -124,7 +124,7 @@ export default {
         a{
           vertical-align: middle;
           margin: 0 10px;
-          color: rgb(194, 151, 117);
+          color: rgb(229, 108, 100);
           cursor: pointer;
         }
       }
@@ -160,7 +160,7 @@ export default {
           left: 1em;
         }
       }
-      color: rgb(194, 151, 117);
+      color: rgb(229, 108, 100);
     }
     .avatar {
       text-align: center;
@@ -172,6 +172,9 @@ export default {
       bottom: 0;
       padding: 1em;
       z-index: 1;
+      .name{
+        color: rgb(229, 108, 100);
+      }
       img {
         width: 160px;
         height: 160px;

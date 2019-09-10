@@ -16,9 +16,9 @@
       </div>
 
       <p class="options">
-        <i class="icon-share iconfont" ></i>分享
+          <i class="icon-share iconfont" ></i>分享
          <i class="icon-fire-fill iconfont" ></i>{{video.hot}}
-        <i class="icon-Dollar iconfont"></i>打钱
+         <i @click="$router.push({path:'/award'})" class="icon-Dollar iconfont"></i>打钱
       </p>
     </div>
 
@@ -180,6 +180,10 @@ export default {
       i {
           vertical-align: middle;
           margin-left: 1em;
+          cursor: pointer;
+          &:hover{
+            color: #18bc9c;
+          }
         }
     }
     .rotate-pause {

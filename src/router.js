@@ -2,6 +2,8 @@ import Vue from "vue"
 import Router from "vue-router"
 import Home from "./views/Home"
 import Manager from './views/Manager'
+import Award from './views/Award'
+import About from './views/About'
 
 Vue.use(Router)
 
@@ -27,6 +29,16 @@ export default new Router({
       path: "/manager",
       name: "manager",
       component: Manager
+    },
+    {
+      path: "/award",
+      name: "award",
+      component: Award
+    },
+    {
+      path: "/about",
+      name: "about",
+      component: About
     },
   ]
 });
