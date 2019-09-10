@@ -6,7 +6,7 @@ const config = require('./server/config')
 const fs = require('fs')
 const path = require('path')
 const uuidv1 = require('uuid/v1')
-const gravatar = require('gravatar')
+const gravatar = require('gravatar') 
 
 const router = new Router()
 const app = new Koa()
@@ -19,6 +19,21 @@ app.use(koaBody({
         maxFileSize: 5 * 1024 * 1024
     }
 }))
+
+
+// web socket
+const server = require('http').Server(app.callback())
+const io = require('socket.io')(server)
+server.listen(8080)
+io.on('connection', socket =>{
+    socket.on('broadcast message',data=>{
+        socket.broadcast.emit('hello everyone')
+    })
+    socket.on('enter',data=>{
+        socket.emit('toast',`欢迎IP为${data.ip}的${data.name}入场`)
+    })
+})
+
 
 // 路由
 // 获取所有video

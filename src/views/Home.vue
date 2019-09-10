@@ -120,7 +120,7 @@ export default {
         top: 0;
         margin: 0;
         line-height: 35px;
-        font-size: 16px;
+        font-size: 1.4rem;
         a{
           vertical-align: middle;
           margin: 0 10px;

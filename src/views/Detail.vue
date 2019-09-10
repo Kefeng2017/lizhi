@@ -1,21 +1,26 @@
 <template>
   <div class="detail">
     <!-- 标题 -->
-    <h3 class="title-wrap">
+    <div class="title-wrap">
       <img
         :class="{'rotate-pause':!isPlaying}"
         class="disc"
         ref="disc"
         src="../assets/img/lizhi.png"
       />
-      <span class="title">{{video.title}}</span>
+
+      <div class="infos">
+        <span class="title">{{video.title}}</span><br>
+        <span class="tag"> <strong>标签:&nbsp;</strong>{{video.tag}}</span>&nbsp;&nbsp;
+        <span class="date"> <strong>更新时间:&nbsp;</strong> {{video.add_time}}</span>
+      </div>
 
       <p class="options">
         <i class="icon-share iconfont" ></i>分享
          <i class="icon-fire-fill iconfont" ></i>{{video.hot}}
-        <i class="icon-Dollar iconfont"></i>赏口饭
+        <i class="icon-Dollar iconfont"></i>打钱
       </p>
-    </h3>
+    </div>
 
     <div v-if="video" class="video-wrap">
       <player @control="controlEvent" :videoInfo=video />
@@ -35,13 +40,14 @@
 
       </div>
     </div>
+    <hr class="line">
     <!-- 评论区 -->
     <div class="comment-wrap" ref="comment">
       <comment ref="comment" :comments=commentList></comment>
     </div>
 
     <!-- 发言 -->
-    <div :class="{'show-up':msgTop<clientHeight}" class="say">
+    <div :class="{'show-up':msgTop<clientHeight-100}" class="say">
       <div class="msg-wrap">
         <input @keydown="enterSend($event)" v-model="comment" class="msg-input" placeholder="说点什么..." type="text" />
         <button @click="sentComment" class="send-btn">发送</button>
@@ -63,7 +69,7 @@ export default {
     return {
       isPlaying: false,
       msgTop: 0,
-      clientHeight: document.documentElement.clientHeight,
+      clientHeight: '',
       video: '',
       comment:'',
       video_id:this.$route.params.id,
@@ -89,14 +95,13 @@ export default {
     })
   },
   mounted () {
+    this.clientHeight = document.documentElement.clientHeight
     let msg = this.$refs.comment
-    let that = this
     window.addEventListener(
       'scroll',
-      function () {
-        that.msgTop = msg.getBoundingClientRect().top
-      },
-      true
+      ()=>{
+        this.msgTop = msg.getBoundingClientRect().top
+      }
     )
   },
   methods: {
@@ -136,23 +141,46 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-  padding: 0 1em;
+  padding: 0 5px;
 
   .title-wrap {
-    position: relative;
     text-align: left;
     max-width: 1080px;
     margin: 0 auto;
     padding: 1em 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: relative;
     .disc {
-      vertical-align: middle;
       width: 100px;
       height: 100px;
       border-radius: 55px;
       border: 5px solid #abc;
       animation-fill-mode: forwards;
       animation: 6s rotated linear infinite;
+    }
+    .infos{
+      flex-grow: 1;
+      padding-left: 1em;
+      .title{
+        font-size: 1.6rem;
+        font-weight: 600;
+      }
+      strong{
+        color: rgb(229, 108, 100);
+      }
+    }
+    .options{
+      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      i {
+          vertical-align: middle;
+          margin-left: 1em;
+        }
     }
     .rotate-pause {
       animation-play-state: paused;
@@ -168,40 +196,17 @@ export default {
         transform: rotate(360deg);
       }
     }
-    .title {
-      padding-left: 1em;
-      vertical-align: middle;
-    }
-    .options{
-      vertical-align: middle;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 14px;
-      right: 0;
-      bottom: 0;
-      position: absolute;
-      i {
-          vertical-align: middle;
-          margin-left: 1em;
-        }
-    }
-    @media (min-width: 540px) {
-      .options {
-        margin: 0;
-        top: 0;
-      }
-    }
     @media (max-width: 540px) {
     .options{
       position: absolute;
-      bottom: 0;
+      top: 1rem;
+      right: 0;
     }
     .disc {
       vertical-align: middle;
-      width: 60px;
-      height: 60px;
-      border-radius: 35px;
+      width: 80px;
+      height: 80px;
+      border-radius: 45px;
       border: 5px solid #abc;
     }
   }
@@ -219,6 +224,9 @@ export default {
       text-align: justify;
       color: #cecbcb;
     }
+  }
+  .switch{
+    height: 200px;
   }
   .comment-wrap {
     max-width: 1080px;
