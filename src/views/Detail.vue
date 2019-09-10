@@ -11,8 +11,8 @@
       <span class="title">{{video.title}}</span>
 
       <p class="options">
-        <i class="icon-fire-fill iconfont" ></i>{{video.vote}}
         <i class="icon-share iconfont" ></i>分享
+         <i class="icon-fire-fill iconfont" ></i>{{video.hot}}
         <i class="icon-Dollar iconfont"></i>赏口饭
       </p>
     </h3>
@@ -25,6 +25,16 @@
       <p class="desc">{{video.description}}</p>
     </div>
 
+    <!-- 切换视频 -->
+    <div class="switch">
+      <div class="prev">
+        
+      </div>
+
+      <div class="next">
+
+      </div>
+    </div>
     <!-- 评论区 -->
     <div class="comment-wrap" ref="comment">
       <comment ref="comment" :comments=commentList></comment>
@@ -33,7 +43,7 @@
     <!-- 发言 -->
     <div :class="{'show-up':msgTop<clientHeight}" class="say">
       <div class="msg-wrap">
-        <input v-model="comment" class="msg-input" placeholder="说点什么..." type="text" />
+        <input @keydown="enterSend($event)" v-model="comment" class="msg-input" placeholder="说点什么..." type="text" />
         <button @click="sentComment" class="send-btn">发送</button>
       </div>
     </div>
@@ -114,6 +124,11 @@ export default {
           }
         })
       }
+    },
+    enterSend(e){
+      if(e.which == 13){
+        this.sentComment()
+      }
     }
   }
 }
@@ -181,6 +196,13 @@ export default {
     .options{
       position: absolute;
       bottom: 0;
+    }
+    .disc {
+      vertical-align: middle;
+      width: 60px;
+      height: 60px;
+      border-radius: 35px;
+      border: 5px solid #abc;
     }
   }
   }

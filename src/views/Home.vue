@@ -35,58 +35,31 @@
           class="music"
         >音乐</span>
       </h1>
-
-      <ul class="list-wrap">
-        <li
-          :key="index"
-          @click="selectVideo(video.id)"
-          class="list-item"
-          v-for="(video, index) in videoList"
-        >
-          <img :src="video.cover +''" @error.once="setDefault($event)" />
-          <div class="infos">
-            <h2 class="title">{{ video.title }}</h2>
-            <p class="tag">{{video.tag}}</p>
-            <p>更新于&nbsp;{{video.add_time}}</p>
-            <div class="count">
-              <span class="view">
-                {{video.view}}<i class="iconfont icon-eye"></i>
-              </span>
-              <span class="hot">
-                {{video.hot}}<i class="iconfont icon-fire1"></i>
-              </span>
-              <span class="comment">
-                {{video.comment}}<i class="iconfont icon-comment"></i>
-              </span>
-            </div>
-          </div>
-        </li>
-
-        <li class="empty-item"></li>
-        <li class="empty-item"></li>
-      </ul>
-
-      <ul></ul>
     </div>
+
+    <video-list :videos="videos" v-show="activeMenu === 'video'"></video-list>
+    <music-list :musics="musics" v-show="activeMenu === 'music'"></music-list>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-// import hlsVideo from '@/components/hlsVideo'
+import videoList from '@/components/VideoList'
+import musicList from '@/components/MusicList'
 export default {
+  components:{videoList,musicList},
   name: 'home',
   data () {
     return {
       activeMenu: 'video',
-      videoList: ''
+      videos: '',
+      musics: ''
     }
   },
   created () {
     this.axios
       .get('/api/all')
       .then(res => {
-        this.videoList = res.data.videos
+        this.videos = res.data.videos
       })
       .catch(e => {
         console.log(e)
@@ -110,14 +83,6 @@ export default {
           }
           break
       }
-    },
-    selectVideo (id) {
-      this.$router.push({
-        path: '/video/' + id
-      })
-    },
-    setDefault (e) {
-      e.target.src = 'http://kkboom.cn/cover/d1ef1410-ce51-11e9-9703-37d866b0de4d.jpg'
     },
     copyLink(){
       console.log(window.location.href);
@@ -181,18 +146,18 @@ export default {
       }
       @keyframes right-in {
         0% {
-          right: -2em;
+          right: -1em;
         }
         100% {
-          right: 2em;
+          right: 1em;
         }
       }
       @keyframes left-in {
         0% {
-          left: -2em;
+          left: -1em;
         }
         100% {
-          left: 2em;
+          left: 1em;
         }
       }
       color: rgb(194, 151, 117);
@@ -233,86 +198,22 @@ export default {
       }
     }
   }
-
-  .content {
-    padding: 1em;
-    max-width: 1080px;
-    margin: 0 auto;
+  .content{
     .menu {
-      text-align: center;
-      font-size: 18px;
-      font-weight: 400;
-      padding: 1em;
-      .video,
-      .music {
-        cursor: pointer;
-        transition: 0.3s border;
-      }
-      .active-menu {
-        color: rgb(229, 108, 100);
-        border-bottom: 2px solid rgb(229, 108, 100);
-      }
+    text-align: center;
+    font-size: 18px;
+    font-weight: 400;
+    padding: 1em;
+    .video,
+    .music {
+      cursor: pointer;
+      transition: 0.3s border;
     }
-    .list-wrap {
-      display: flex;
-      width: 100%;
-      align-items: flex-start;
-      justify-content: space-around;
-      align-content: flex-start;
-      flex-wrap: wrap;
-      .list-item {
-        box-shadow: 0 0 30px #212223;
-        cursor: pointer;
-        color: #242326;
-        box-sizing: border-box;
-        width: 320px;
-        margin: 1em;
-        background-color: #95969b;
-        img {
-          width: 100%;
-        }
-        .infos {
-          padding: 0.5em;
-          position: relative;
-          .title {
-            font-size: 16px;
-            line-height: 32px;
-          }
-          .count{
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            flex-direction: column;
-            span{
-              text-align: right;
-              padding: 0 1em;
-              i{
-                margin-left: .3em;
-              }
-            }
-          }
-        }
-      }
-      .empty-item {
-        width: 320px;
-        height: 0;
-        margin: 1em;
-      }
+    .active-menu {
+      color: rgb(229, 108, 100);
+      border-bottom: 2px solid rgb(229, 108, 100);
     }
   }
-
-  @media (max-width: 540px) {
-    .content {
-      padding: 0;
-      .list-wrap {
-        .list-item {
-          width: 360px;
-        }
-      }
-    }
   }
 }
 </style>

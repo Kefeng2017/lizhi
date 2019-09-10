@@ -11,7 +11,10 @@
             <br />{{comment.text}}
           </p>
           <span class="reply">回复</span>
-          <span class="vote">牛逼&nbsp;{{(comment.vote)}}</span>
+          <span @click="voteComment(comment.id,index)" class="vote">
+            赞&nbsp;{{(comment.vote)}}
+            <i v-if="isActive(comment.id)" class="icon-xihuan1 iconfont"></i>
+          </span>
         </li>
       </ul>
     </div>
@@ -20,18 +23,42 @@
 
 <script>
 import DEFAULT_AVATAR from '../assets/img/avatar.jpg'
+import { clearTimeout } from 'timers';
 export default {
   data () {
     return {
-
+      voteActive:false,
+      voteTimer:null,
+      voteId:''
     }
   },
   props:['comments'],
   methods:{
     setDefaultAvatar(e){
-      console.log(e.target)
       e.target.src = DEFAULT_AVATAR
       e.target.onerror = null
+    },
+    voteComment(id,index){
+      this.voteId = id
+      this.axios('/api/voteComment?id='+id).then(res=>{
+        if(res.data.code === 0){
+          this.comments[index].vote+=1
+          if(this.voteTimer){
+            this.voteActive = false
+            clearTimeout(this.voteTimer)
+          }
+          this.voteActive = true
+          this.voteTimer = setTimeout(() => {
+            this.voteActive = false
+            this.voteTimer = null
+          }, 300);
+        }
+      }).catch(e=>{
+        console.log(e)
+      })
+    },
+    isActive(id){
+      return this.voteActive && this.voteId === id
     }
   }
 }
@@ -61,18 +88,6 @@ export default {
           height: 40px;
           border-radius: 20px;
           margin-right: 5px;
-          @media (min-width: 540px) {
-          .avatar{
-            width: 60px;
-            height: 60px;
-            border-radius: 30px;
-            margin-right: 1em;
-            font-size: 14px;
-          }
-          .vote, .reply{
-            margin: 0 1em;
-          }
-        }
         }
         .text {
           font-size: 12px;
@@ -87,6 +102,27 @@ export default {
           color: rgb(229, 108, 100);
           margin: 0 5px;
           cursor: pointer;
+        }
+        .vote{
+          position: relative;
+          .iconfont{
+            position: absolute;
+            top: -110%;
+            left: 0;
+            right: 0;
+          }
+        }
+        @media (min-width: 540px) {
+          .avatar{
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            margin-right: 1em;
+            font-size: 14px;
+          }
+          .vote, .reply{
+            margin: 0 1em;
+          }
         }
       }
     }

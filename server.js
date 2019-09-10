@@ -39,6 +39,8 @@ router.get('/video', async ctx => {
             const video = await ctx.db.query('select * from videos where id=?', id)
             if (video.length) {
                 ctx.body = { code: 0, video: video }
+                let randomHot = video[0].hot + parseInt(Math.random()*30+1)
+                ctx.db.query('update videos set hot = ?,view = view+1 where id = ?',[randomHot,id] )
             } else {
                 ctx.body = { code: -1, msg: 'the video you looking for is not exist' }
             }
@@ -106,7 +108,8 @@ router.post('/uploadcover', async ctx => {
 
         const ws = fs.createWriteStream(path.resolve(__dirname, './cover/' + randomName))
         const saveCover = await rs.pipe(ws)
-        const cover_url = 'http://' + ctx.host + saveCover.path
+        console.log(saveCover)
+        const cover_url = 'http://' + ctx.hostname + '/cover/'+randomName
 
         ctx.body = { code: 0, url: cover_url }
     } catch (e) {
@@ -163,7 +166,6 @@ router.get('/delete', async ctx => {
 // 添加
 router.post('/addComment', async ctx => {
     try {
-
         // 接受数据
         const data = ctx.request.body
         const email = data.email || uuidv1()+'@qq.com'
@@ -174,14 +176,15 @@ router.post('/addComment', async ctx => {
             avatar,
             data.name || '一位不愿透露姓名的少侠'
         ]
-        const comment = {
-            avatar,
-            text:data.comment,
-            vote:0,
-            username: data.name || '一位不愿透露姓名的少侠'
-        }
         const saveComment = await ctx.db.query('insert into comment(text,videoid,avatar,username) values (?,?,?,?)', saveList)
         if (saveComment.affectedRows > 0) {
+            const comment = {
+                avatar,
+                text: data.comment,
+                vote: 0,
+                username: data.name || '一位不愿透露姓名的少侠',
+                id: saveComment.insertId
+            }
             ctx.body = {code: 0, msg: '发表评论成功',comment}
         } else {
             ctx.body = { code: -1, msg: '发表评论失败' }
@@ -196,11 +199,24 @@ router.post('/addComment', async ctx => {
 router.get('/comments', async ctx => {
     try {
         let id = parseInt(ctx.request.query.id)
-        let findResult = await ctx.db.query('select username,avatar,text,vote from comment where videoid=?', id)
+        let findResult = await ctx.db.query('select id, username,avatar,text,vote,c_date from comment where videoid=? order by c_date desc ', id)
         ctx.body = { code: 0, comments: findResult }
     } catch (e) {
         console.log(e)
         ctx.body = { code: -1, msg: 'get comments failed' }
+    }
+})
+
+router.get('/voteComment', async ctx => {
+    try {
+        let id = parseInt(ctx.request.query.id)
+        let updateResult = await ctx.db.query('update comment set vote = vote+1 where id =?', id)
+        if(updateResult.affectedRows>0){
+            ctx.body = { code: 0, msg: 'success' }
+        }   
+    } catch (e) {
+        console.log(e)
+        ctx.body = { code: -1, msg: '操作失败' }
     }
 })
 

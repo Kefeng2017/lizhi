@@ -8,8 +8,8 @@ module.exports = {
     hotOnly: true, // 热更新
     proxy: {
       "/api": {
-        // target: "http://localhost:9080",
-        target: "http://118.25.210.208:9080",
+        target: "http://localhost:9080",
+        // target: "http://118.25.210.208:9080",
         changeOrigin: true,
         pathRewrite: {
           "^/api": ""
